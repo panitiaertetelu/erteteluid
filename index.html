@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#07111f" />
+  <meta name="description" content="Scanner Kartu Keluarga RT - OCR lokal di browser, verifikasi dan ekspor Excel." />
+  <title>KK Scan RT — Scanner Kartu Keluarga</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <style>
+    :root{--bg:#07111f;--panel:#0c1829;--panel2:#102033;--line:rgba(255,255,255,.10);--text:#edf7ff;--muted:#91a8bc;--cyan:#16d9ff;--green:#27e39a;--amber:#ffbf47;--danger:#ff687a;--shadow:0 18px 50px rgba(0,0,0,.28)}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:radial-gradient(circle at 20% -10%,rgba(22,217,255,.11),transparent 30%),radial-gradient(circle at 100% 10%,rgba(39,227,154,.08),transparent 30%),var(--bg);color:var(--text)}
+    body{padding:24px}.app{max-width:1280px;margin:auto}.top{display:flex;gap:16px;align-items:flex-end;justify-content:space-between;margin-bottom:18px}.brand h1{font-size:clamp(24px,4vw,36px);margin:0 0 4px;letter-spacing:-.03em}.brand p{margin:0;color:var(--muted)}
+    .badge{display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.035);font-size:12px;color:#c7d9e7}.dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 14px rgba(39,227,154,.8)}
+    .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}.card{background:linear-gradient(180deg,rgba(255,255,255,.035),rgba(255,255,255,.018));border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow);backdrop-filter:blur(12px);overflow:hidden}.card-head{display:flex;justify-content:space-between;align-items:center;padding:16px 18px;border-bottom:1px solid var(--line)}.card-head h2{font-size:15px;margin:0}.card-body{padding:18px}
+    .drop{min-height:300px;border:1.5px dashed rgba(22,217,255,.35);border-radius:18px;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px;transition:.2s;background:rgba(22,217,255,.025)}.drop.drag{border-color:var(--cyan);background:rgba(22,217,255,.07);transform:translateY(-1px)}
+    .drop strong{display:block;font-size:18px;margin-bottom:7px}.drop small{color:var(--muted);display:block;line-height:1.55;max-width:460px;margin:0 auto 16px}.actions{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}.btn{appearance:none;border:1px solid var(--line);background:#122338;color:var(--text);border-radius:12px;padding:11px 14px;font-weight:700;cursor:pointer}.btn:hover{filter:brightness(1.12)}.btn.primary{background:linear-gradient(135deg,#0db9db,#168cff);border-color:rgba(22,217,255,.5)}.btn.green{background:linear-gradient(135deg,#1ca975,#15b88b);border-color:rgba(39,227,154,.4)}.btn.amber{background:linear-gradient(135deg,#b97918,#cf941e);border-color:rgba(255,191,71,.4)}.btn.ghost{background:transparent}.btn.danger{border-color:rgba(255,104,122,.35);color:#ffb6c0}
+    input[type=file]{display:none}.preview{margin-top:16px;display:none}.preview img{width:100%;max-height:480px;object-fit:contain;border-radius:14px;background:#020711;border:1px solid var(--line)}
+    .progress{display:none;margin-top:14px}.bar{height:9px;background:#07101c;border:1px solid var(--line);border-radius:999px;overflow:hidden}.bar i{display:block;width:0;height:100%;background:linear-gradient(90deg,var(--cyan),var(--green));transition:width .25s}.status{margin-top:8px;color:var(--muted);font-size:13px}
+    .formgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.field{display:flex;flex-direction:column;gap:6px}.field.full{grid-column:1/-1}.field label{font-size:12px;color:#9db2c4}.field input,.field textarea,.field select{width:100%;background:#091624;border:1px solid var(--line);color:var(--text);border-radius:11px;padding:11px 12px;outline:none}.field textarea{min-height:84px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:rgba(22,217,255,.65);box-shadow:0 0 0 3px rgba(22,217,255,.08)}
+    .members{margin-top:18px}.members-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:9px}.members-head h3{font-size:14px;margin:0}.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:13px}.table{width:100%;border-collapse:collapse;min-width:880px}.table th,.table td{padding:9px;border-bottom:1px solid rgba(255,255,255,.07);font-size:12px;text-align:left;vertical-align:top}.table th{background:#0a1725;color:#9db2c4;position:sticky;top:0}.table td input,.table td select{width:100%;padding:8px;border:1px solid var(--line);background:#07111d;color:var(--text);border-radius:8px}.table tr:last-child td{border-bottom:0}.empty{text-align:center;color:var(--muted);padding:20px}
+    .mini{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.stat{padding:13px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.025)}.stat b{font-size:20px;display:block}.stat span{font-size:11px;color:var(--muted)}
+    .raw{margin-top:16px}.raw textarea{width:100%;height:170px;background:#050c15;color:#bfe8f6;border:1px solid var(--line);border-radius:12px;padding:12px;font:12px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace}.note{padding:11px 12px;border-radius:12px;background:rgba(255,191,71,.07);border:1px solid rgba(255,191,71,.18);color:#f3d899;font-size:12px;line-height:1.55;margin-top:12px}.footer{margin-top:16px;color:#71879a;font-size:11px;text-align:center}.hidden{display:none!important}
+    @media(max-width:950px){body{padding:14px}.grid{grid-template-columns:1fr}.top{align-items:flex-start;flex-direction:column}.formgrid{grid-template-columns:1fr}.mini{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:580px){.card{border-radius:17px}.card-body{padding:14px}.drop{min-height:250px}.mini{gap:7px}.stat{padding:11px 9px}.stat b{font-size:17px}.btn{padding:10px 12px}.brand h1{font-size:25px}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <header class="top">
+    <div class="brand">
+      <div class="badge"><span class="dot"></span> OCR diproses di perangkat</div>
+      <h1>KK Scan RT</h1>
+      <p>Scan Kartu Keluarga → ekstrak data → koreksi → simpan / ekspor.</p>
+    </div>
+    <div class="actions">
+      <button class="btn ghost" id="resetBtn">Reset</button>
+      <button class="btn green" id="exportBtn">Ekspor Excel</button>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <div class="card-head"><h2>1. Foto / Scan Kartu Keluarga</h2><span id="ocrStatus" class="badge">Belum ada scan</span></div>
+      <div class="card-body">
+        <div id="drop" class="drop">
+          <div>
+            <strong>Ambil foto KK atau pilih gambar</strong>
+            <small>Gunakan foto yang lurus, tidak terpotong, terang, dan seluruh tabel anggota terlihat. Disarankan JPG/PNG berkualitas tinggi.</small>
+            <div class="actions">
+              <label class="btn primary" for="cameraInput">📷 Kamera</label>
+              <label class="btn" for="fileInput">🖼️ Pilih Foto</label>
+              <input id="cameraInput" type="file" accept="image/*" capture="environment" />
+              <input id="fileInput" type="file" accept="image/*" />
+            </div>
+          </div>
+        </div>
+        <div class="preview" id="preview"><img id="previewImg" alt="Preview KK" /></div>
+        <div class="progress" id="progress"><div class="bar"><i id="progressBar"></i></div><div class="status" id="progressText">Menyiapkan OCR…</div></div>
+        <div class="note">Catatan: OCR membantu mengurangi pengetikan, tetapi data kependudukan tetap harus diperiksa terhadap KK asli sebelum disimpan sebagai data resmi.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="card-head"><h2>2. Data KK</h2><span class="badge">Wajib diverifikasi</span></div>
+      <div class="card-body">
+        <div class="formgrid">
+          <div class="field"><label>No. KK *</label><input id="noKK" inputmode="numeric" maxlength="16" placeholder="16 digit" /></div>
+          <div class="field"><label>Nama Kepala Keluarga *</label><input id="kepala" placeholder="Sesuai KK" /></div>
+          <div class="field full"><label>Alamat *</label><textarea id="alamat" placeholder="Alamat lengkap sesuai KK"></textarea></div>
+          <div class="field"><label>RT / RW</label><input id="rtrw" placeholder="000 / 000" /></div>
+          <div class="field"><label>Nomor Rumah *</label><input id="rumah" placeholder="Contoh: 17A" /></div>
+          <div class="field"><label>Desa / Kelurahan</label><input id="desa" /></div>
+          <div class="field"><label>Kecamatan</label><input id="kecamatan" /></div>
+          <div class="field"><label>Kabupaten / Kota</label><input id="kabupaten" /></div>
+          <div class="field"><label>Provinsi</label><input id="provinsi" /></div>
+          <div class="field"><label>Kode Pos</label><input id="kodepos" inputmode="numeric" /></div>
+          <div class="field"><label>No. HP Keluarga *</label><input id="hp" inputmode="tel" placeholder="08xxxxxxxxxx" /></div>
+          <div class="field"><label>Jumlah Anggota *</label><input id="jumlah" type="number" min="1" max="30" /></div>
+          <div class="field full"><label>Status Pendataan</label><select id="status"><option>Hasil Scan — Perlu Verifikasi</option><option>Sudah Diverifikasi</option><option>Perlu Perbaikan</option></select></div>
+          <div class="field full"><label>Catatan</label><textarea id="catatan" placeholder="Catatan petugas"></textarea></div>
+        </div>
+
+        <div class="mini" style="margin-top:14px">
+          <div class="stat"><b id="statMembers">0</b><span>anggota terdeteksi</span></div>
+          <div class="stat"><b id="statFields">0</b><span>field terisi</span></div>
+          <div class="stat"><b id="statWarnings">0</b><span>peringatan</span></div>
+        </div>
+
+        <div class="members">
+          <div class="members-head"><h3>Daftar Anggota Keluarga — harus sesuai KK</h3><button id="addMemberBtn" class="btn">+ Tambah Baris</button></div>
+          <div class="tablewrap">
+            <table class="table" id="memberTable">
+              <thead><tr><th>No</th><th>NIK *</th><th>Nama Lengkap *</th><th>Hubungan *</th><th>JK</th><th>Tempat Lahir</th><th>Tgl Lahir</th><th>Agama</th><th>Pekerjaan</th><th>Aksi</th></tr></thead>
+              <tbody id="memberBody"><tr><td colspan="10" class="empty">Belum ada anggota. Jalankan scan terlebih dahulu atau tambah baris manual.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="actions" style="justify-content:flex-end;margin-top:15px">
+          <button id="saveBtn" class="btn primary">Simpan Data KK</button>
+        </div>
+        <div class="raw"><div class="members-head"><h3>Hasil OCR Mentah</h3><button id="toggleRaw" class="btn ghost">Tampilkan</button></div><textarea id="rawText" class="hidden" placeholder="Teks OCR akan muncul di sini..."></textarea></div>
+      </div>
+    </section>
+  </div>
+
+  <section class="card" style="margin-top:18px">
+    <div class="card-head"><h2>Data Tersimpan di Perangkat</h2><span id="savedCount" class="badge">0 KK</span></div>
+    <div class="card-body">
+      <div class="tablewrap"><table class="table" id="savedTable"><thead><tr><th>No. KK</th><th>Kepala Keluarga</th><th>No. Rumah</th><th>No. HP</th><th>Jumlah Anggota</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="savedBody"><tr><td colspan="7" class="empty">Belum ada data tersimpan.</td></tr></tbody></table></div>
+    </div>
+  </section>
+  <div class="footer">KK Scan RT • Data sementara • Tidak menggantikan dokumen kependudukan resmi.</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@7.0.0/dist/tesseract.min.js"></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const fields = ['noKK','kepala','alamat','rtrw','rumah','desa','kecamatan','kabupaten','provinsi','kodepos','hp','jumlah','status','catatan'];
+  let currentImage = null;
+  let members = [];
+  let saved = JSON.parse(localStorage.getItem('kkScanRT') || '[]');
+
+  function setStatus(text, kind='') { const el=$('ocrStatus'); el.textContent=text; el.style.borderColor=kind==='ok'?'rgba(39,227,154,.35)':kind==='warn'?'rgba(255,191,71,.35)':'var(--line)'; }
+  function normalize(s){return String(s||'').replace(/\u00a0/g,' ').replace(/[|•]/g,' ').replace(/\s+/g,' ').trim();}
+  function digits(s){return String(s||'').replace(/\D/g,'');}
+  function titleCase(s){ return normalize(s).toLowerCase().replace(/(^|\s)([a-zà-ÿ])/g,(m,a,b)=>a+b.toUpperCase()); }
+  function setValue(id,v){$(id).value=v||'';}
+  function countFilled(){ return fields.filter(id => String($(id).value||'').trim()!=='' && id!=='catatan' && id!=='status').length; }
+  function warnings(){ let w=0; const kk=digits($('noKK').value); if(kk && kk.length!==16) w++; if(!kk) w++; if(!$('kepala').value.trim())w++; if(!$('rumah').value.trim())w++; if(!$('hp').value.trim())w++; if(!Number($('jumlah').value))w++; members.forEach(m=>{ if(digits(m.nik).length!==16||!m.nama.trim()||!m.hubungan.trim())w++; }); return w; }
+  function updateStats(){ $('statMembers').textContent=members.length; $('statFields').textContent=countFilled(); $('statWarnings').textContent=warnings(); }
+
+  function renderMembers(){
+    const body=$('memberBody');
+    if(!members.length){body.innerHTML='<tr><td colspan="10" class="empty">Belum ada anggota. Jalankan scan terlebih dahulu atau tambah baris manual.</td></tr>'; updateStats(); return;}
+    body.innerHTML = members.map((m,i)=>`<tr>
+      <td>${i+1}</td>
+      <td><input data-i="${i}" data-k="nik" value="${esc(m.nik)}" inputmode="numeric" maxlength="16"></td>
+      <td><input data-i="${i}" data-k="nama" value="${esc(m.nama)}"></td>
+      <td><input data-i="${i}" data-k="hubungan" value="${esc(m.hubungan)}"></td>
+      <td><select data-i="${i}" data-k="jk"><option ${m.jk==='Laki-laki'?'selected':''}>Laki-laki</option><option ${m.jk==='Perempuan'?'selected':''}>Perempuan</option><option ${!['Laki-laki','Perempuan'].includes(m.jk)?'selected':''}></option></select></td>
+      <td><input data-i="${i}" data-k="tempat" value="${esc(m.tempat)}"></td>
+      <td><input data-i="${i}" data-k="tanggal" value="${esc(m.tanggal)}"></td>
+      <td><input data-i="${i}" data-k="agama" value="${esc(m.agama)}"></td>
+      <td><input data-i="${i}" data-k="pekerjaan" value="${esc(m.pekerjaan)}"></td>
+      <td><button class="btn danger" data-del="${i}">Hapus</button></td>
+    </tr>`).join('');
+    body.querySelectorAll('input,select').forEach(el=>el.addEventListener('input',e=>{ const i=+e.target.dataset.i,k=e.target.dataset.k; members[i][k]=e.target.value; updateStats(); }));
+    body.querySelectorAll('[data-del]').forEach(el=>el.addEventListener('click',()=>{members.splice(+el.dataset.del,1);renderMembers();}));
+    updateStats();
+  }
+  function esc(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+
+  function readFile(file){
+    if(!file) return;
+    const reader=new FileReader(); reader.onload=()=>{ currentImage=reader.result; $('previewImg').src=currentImage; $('preview').style.display='block'; runOCR(currentImage); }; reader.readAsDataURL(file);
+  }
+  ['cameraInput','fileInput'].forEach(id=>$(id).addEventListener('change',e=>readFile(e.target.files[0])));
+  const drop=$('drop');
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('drag');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('drag');}));
+  drop.addEventListener('drop',e=>readFile(e.dataTransfer.files[0]));
+
+  async function runOCR(image){
+    if(typeof Tesseract==='undefined'){ setStatus('Library OCR gagal dimuat','warn'); alert('Library OCR belum dimuat. Buka aplikasi saat tersambung internet, atau self-host library untuk mode lokal penuh.'); return; }
+    $('progress').style.display='block'; $('progressBar').style.width='2%'; $('progressText').textContent='Menyiapkan mesin OCR bahasa Indonesia…'; setStatus('Memproses…');
+    try{
+      const worker=await Tesseract.createWorker('ind',1,{ logger:m=>{ if(m.status){ $('progressText').textContent=m.status+' '+Math.round((m.progress||0)*100)+'%'; $('progressBar').style.width=Math.max(3,Math.round((m.progress||0)*100))+'%'; } } });
+      const ret=await worker.recognize(image);
+      $('rawText').value=ret.data.text||'';
+      await worker.terminate();
+      parseOCR(ret.data.text||''); $('progressBar').style.width='100%'; $('progressText').textContent='Selesai. Periksa hasil sebelum menyimpan.'; setStatus('OCR selesai','ok');
+      setTimeout(()=>{ $('progress').style.display='none'; },900);
+    }catch(err){ console.error(err); setStatus('OCR gagal','warn'); $('progressText').textContent='OCR gagal: '+err.message; alert('OCR gagal dijalankan. Coba foto yang lebih terang dan lurus.'); }
+  }
+
+  function extractAfter(labels,text){
+    const lines=text.split(/\r?\n/).map(normalize).filter(Boolean);
+    for(const line of lines){ for(const label of labels){ const re=new RegExp('^'+label.replace(/[.*+?^${}()|[\\]\\]/g,'\\$&')+'\\s*[:.]?\\s*(.*)$','i'); const m=line.match(re); if(m&&m[1]) return m[1].trim(); } }
+    return '';
+  }
+  function extractKK(text){ const m=normalize(text).match(/(?:NO\.?\s*KK|NOMOR\s+KK|KARTU\s+KELUARGA)\D{0,30}(\d[\s.-]?\d{3,17})/i); return m?digits(m[1]).slice(0,16):''; }
+  function extractLabeled(text, labels){
+    const lines=text.split(/\r?\n/).map(normalize).filter(Boolean); for(const line of lines){ const m=line.match(new RegExp('(?:'+labels.join('|')+')\\s*[:.]?\\s+(.+)','i')); if(m&&m[1]) return m[1].replace(/\s{2,}.*/,'').trim(); } return '';
+  }
+
+  function parseMembers(text){
+    const lines=text.split(/\r?\n/).map(s=>s.replace(/\t/g,'  ').trim()).filter(Boolean); const out=[];
+    for(let i=0;i<lines.length;i++){
+      const line=lines[i]; const m=line.match(/(?:^|\s)(\d{16})(?:\s|$)/);
+      if(!m) continue;
+      const nik=m[1]; let rest=line.slice(m.index+m[0].indexOf(nik)+nik.length).trim(); rest=rest.replace(/^[:|.-]+/,'').trim();
+      const cells=rest.split(/\s{2,}|\t+/).map(normalize).filter(Boolean);
+      let nama=cells[0]||''; if(!nama && lines[i+1]) nama=lines[i+1].trim();
+      const flat=rest;
+      let jk=/\b(PEREMPUAN|PEREMPUA[NM]?|WANITA|LAKI-LAKI|LAKI LAKI|PRIA)\b/i.exec(flat); let hubungan=/\b(KEPALA KELUARGA|ISTRI|SUAMI|ANAK|MENANTU|CUCU|ORANG TUA|AYAH|IBU|FAMILI LAIN|SAUDARA|PEMBANTU)\b/i.exec(flat);
+      let tanggal=/\b(\d{1,2}[\/-]\d{1,2}[\/-]\d{2,4}|\d{1,2}\s+[A-Z]{3,10}\s+\d{4})\b/i.exec(flat);
+      let agama=/\b(ISLAM|KRISTEN|KATOLIK|HINDU|BUDDHA|BUDHA|KONGHUCU)\b/i.exec(flat);
+      let gol=/\b(AB|A|B|O)\b\s*$/i.exec(flat);
+      const cleanedName=titleCase(nama.replace(/\d+/g,'').replace(/\b(LAKI-LAKI|LAKI|PRIA|PEREMPUAN|WANITA)\b/ig,'').trim());
+      if(cleanedName.length<2) continue;
+      out.push({nik,nama:cleanedName,hubungan:hubungan?titleCase(hubungan[1]):'',jk:jk?(/PEREMPUAN|WANITA/i.test(jk[1])?'Perempuan':'Laki-laki'):'',tempat:'',tanggal:tanggal?tanggal[1]:'',agama:agama?titleCase(agama[1]):'',pekerjaan:'',});
+    }
+    const uniq=[]; const seen=new Set(); for(const m of out){if(!seen.has(m.nik)){seen.add(m.nik);uniq.push(m);}} return uniq;
+  }
+
+  function parseOCR(text){
+    const kk=extractKK(text); if(kk) setValue('noKK',kk);
+    const kepala=extractAfter(['NAMA KEPALA KELUARGA','KEPALA KELUARGA','NAMA KEPALA'],text); if(kepala) setValue('kepala',titleCase(kepala));
+    const alamat=extractAfter(['ALAMAT'],text); if(alamat) setValue('alamat',titleCase(alamat));
+    const rtrw=extractAfter(['RT\\s*\\/\\s*RW','RT/RW'],text); if(rtrw) setValue('rtrw',rtrw);
+    const desa=extractLabeled(text,['DESA\\s*\\/\\s*KELURAHAN','KELURAHAN','DESA']); if(desa) setValue('desa',titleCase(desa));
+    const kec=extractLabeled(text,['KECAMATAN']); if(kec) setValue('kecamatan',titleCase(kec));
+    const kab=extractLabeled(text,['KABUPATEN','KOTA']); if(kab) setValue('kabupaten',titleCase(kab));
+    const prov=extractLabeled(text,['PROVINSI']); if(prov) setValue('provinsi',titleCase(prov));
+    const pos=normalize(text).match(/\b(\d{5})\b/); if(pos) setValue('kodepos',pos[1]);
+    const parsed=parseMembers(text); if(parsed.length){members=parsed; setValue('jumlah',String(parsed.length)); renderMembers();}
+    updateStats();
+  }
+
+  $('addMemberBtn').addEventListener('click',()=>{members.push({nik:'',nama:'',hubungan:'',jk:'',tempat:'',tanggal:'',agama:'',pekerjaan:''});renderMembers();});
+  fields.forEach(id=>$(id).addEventListener('input',updateStats));
+  $('toggleRaw').addEventListener('click',()=>{const t=$('rawText'); t.classList.toggle('hidden'); $('toggleRaw').textContent=t.classList.contains('hidden')?'Tampilkan':'Sembunyikan';});
+
+  function getRecord(){
+    return {noKK:$('noKK').value.trim(),kepala:$('kepala').value.trim(),alamat:$('alamat').value.trim(),rtrw:$('rtrw').value.trim(),rumah:$('rumah').value.trim(),desa:$('desa').value.trim(),kecamatan:$('kecamatan').value.trim(),kabupaten:$('kabupaten').value.trim(),provinsi:$('provinsi').value.trim(),kodepos:$('kodepos').value.trim(),hp:$('hp').value.trim(),jumlah:Number($('jumlah').value||0),status:$('status').value,catatan:$('catatan').value.trim(),members:JSON.parse(JSON.stringify(members)),updatedAt:new Date().toISOString()};
+  }
+  function validateRecord(r){
+    const errs=[]; if(!/^\d{16}$/.test(r.noKK)) errs.push('No. KK harus 16 digit.'); if(!r.kepala)errs.push('Nama Kepala Keluarga wajib diisi.'); if(!r.rumah)errs.push('Nomor rumah wajib diisi.'); if(!r.hp)errs.push('Nomor HP wajib diisi.'); if(!(r.jumlah>=1))errs.push('Jumlah anggota wajib diisi.'); if(r.members.length!==r.jumlah)errs.push('Jumlah anggota tidak sama dengan jumlah baris anggota.'); r.members.forEach((m,i)=>{if(!/^\d{16}$/.test(digits(m.nik)))errs.push(`NIK anggota #${i+1} harus 16 digit.`);if(!m.nama)errs.push(`Nama anggota #${i+1} wajib diisi.`);if(!m.hubungan)errs.push(`Hubungan keluarga anggota #${i+1} wajib diisi.`);}); return errs;
+  }
+  $('saveBtn').addEventListener('click',()=>{
+    const r=getRecord(), errs=validateRecord(r); if(errs.length){alert('Periksa data berikut:\n\n• '+errs.join('\n• ')); return;}
+    const idx=saved.findIndex(x=>x.noKK===r.noKK); if(idx>=0)saved[idx]=r; else saved.push(r); localStorage.setItem('kkScanRT',JSON.stringify(saved)); renderSaved(); alert('Data KK berhasil disimpan di perangkat ini.');
+  });
+
+  function loadRecord(r){ fields.forEach(id=>{if(id in r) $(id).value=(r[id]??'')}); members=JSON.parse(JSON.stringify(r.members||[])); renderMembers(); window.scrollTo({top:0,behavior:'smooth'}); }
+  function renderSaved(){const body=$('savedBody'); $('savedCount').textContent=saved.length+' KK'; if(!saved.length){body.innerHTML='<tr><td colspan="7" class="empty">Belum ada data tersimpan.</td></tr>';return;} body.innerHTML=saved.map((r,i)=>`<tr><td>${esc(r.noKK)}</td><td>${esc(r.kepala)}</td><td>${esc(r.rumah)}</td><td>${esc(r.hp)}</td><td>${esc(r.jumlah)}</td><td>${esc(r.status)}</td><td><button class="btn" data-load="${i}">Buka</button> <button class="btn danger" data-remove="${i}">Hapus</button></td></tr>`).join(''); body.querySelectorAll('[data-load]').forEach(b=>b.onclick=()=>loadRecord(saved[+b.dataset.load])); body.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{if(confirm('Hapus data KK ini dari perangkat?')){saved.splice(+b.dataset.remove,1);localStorage.setItem('kkScanRT',JSON.stringify(saved));renderSaved();}});}
+  renderSaved(); updateStats();
+
+  $('resetBtn').addEventListener('click',()=>{if(confirm('Kosongkan form scan saat ini?')){fields.forEach(id=>$(id).value='');$('status').value='Hasil Scan — Perlu Verifikasi';members=[];$('preview').style.display='none';$('rawText').value='';$('rawText').classList.add('hidden');$('toggleRaw').textContent='Tampilkan';setStatus('Belum ada scan');updateStats();renderMembers();}});
+  $('exportBtn').addEventListener('click',()=>{
+    if(!saved.length){alert('Belum ada data tersimpan.');return;}
+    if(typeof XLSX==='undefined'){alert('Library Excel belum dimuat.');return;}
+    const kkRows=saved.map(r=>({
+      'No. KK':r.noKK,'Kepala Keluarga':r.kepala,'Nomor Rumah':r.rumah,'No. HP':r.hp,'Alamat':r.alamat,'RT/RW':r.rtrw,'Desa/Kelurahan':r.desa,'Kecamatan':r.kecamatan,'Kabupaten/Kota':r.kabupaten,'Provinsi':r.provinsi,'Kode Pos':r.kodepos,'Jumlah Anggota':r.jumlah,'Status Pendataan':r.status,'Catatan':r.catatan,'Tanggal Update':new Date(r.updatedAt).toLocaleString('id-ID')
+    }));
+    const memberRows=[]; saved.forEach(r=>r.members.forEach((m,i)=>memberRows.push({'No. KK':r.noKK,'No':i+1,'NIK':m.nik,'Nama Lengkap':m.nama,'Hubungan':m.hubungan,'Jenis Kelamin':m.jk,'Tempat Lahir':m.tempat,'Tanggal Lahir':m.tanggal,'Agama':m.agama,'Pekerjaan':m.pekerjaan})));
+    const wb=XLSX.utils.book_new(); const ws1=XLSX.utils.json_to_sheet(kkRows); const ws2=XLSX.utils.json_to_sheet(memberRows);
+    ws1['!cols']=[{wch:20},{wch:26},{wch:14},{wch:16},{wch:36},{wch:10},{wch:20},{wch:20},{wch:22},{wch:18},{wch:10},{wch:14},{wch:25},{wch:35},{wch:22}]; ws2['!cols']=[{wch:20},{wch:6},{wch:20},{wch:28},{wch:20},{wch:16},{wch:18},{wch:15},{wch:14},{wch:24}];
+    XLSX.utils.book_append_sheet(wb,ws1,'Data KK'); XLSX.utils.book_append_sheet(wb,ws2,'Data Anggota');
+    XLSX.writeFile(wb,'Data_KK_Hasil_Scan.xlsx');
+  });
+})();
+</script>
+</body>
+</html>
